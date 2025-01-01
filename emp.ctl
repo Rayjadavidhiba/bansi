@@ -1,0 +1,1 @@
+load data infile 'D:\2450\nidhi.txt' into table emp24 fields terminated by ',' (no,name)
