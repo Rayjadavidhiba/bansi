@@ -1,48 +1,40 @@
+//Shell Sort
+#include <stdio.h>
 #include<iostream.h>
-#include<conio.h>
-int x,y;
-void sum();
-void sum1(int,int);
-int sum2();
-int sum3(int,int);
+#define size 10
+void shellsort(int a[],int n);
+void disp(int a[]);
 void main()
 {
-   clrscr();
-   cout<<"\n Enter First Value : ";
-   cin>>x;
-   cout<<"\n Enter Second Value : ";
-   cin>>y;
-   sum();
-   sum1(x,y);
-   cout<<"\n Sum is : "<<sum2();
-   cout<<"\n Sum is : "<<sum3(x,y);
-   getch();
+   int data[size],i;
+   for(i=0;i<size;i++)
+   cin>>"%d ",&data[i];
+   cout<<"\n Before sorting...\n";
+   disp(data);
+   cout<<"\n After sorting...\n";
+   shellsort(data,size);
+   disp(data);
 }
-void sum()
+void disp(int a[])
 {
-   cout<<"\n ";
-   cout<<"\n Without Argument Without Return";
-   cout<<"\n ";
-   cout<<"\n Sum is : "<<(x+y);
+   int i;
+   for(i=0;i<size;i++)
+   cout<<"%d ",a[i];
 }
-void sum1(int a,int b)
+void shellsort(int a[],int n)
 {
-   cout<<"\n ";
-   cout<<"\n With Argument Without Return";
-   cout<<"\n ";
-   cout<<"\n Sum is : "<<(a+b);
-}
-int sum2()
-{
-   cout<<"\n ";
-   cout<<"\n Without Argument With Return";
-   cout<<"\n ";
-   return (x+y);
-}
-int sum3(int a,int b)
-{
-   cout<<"\n ";
-   cout<<"\n With Argument With Return";
-   cout<<"\n ";
-   return (a+b);
+   //rearrange elementes at each n/2,n/4,n/8....intervals.
+   int i,j,interval,tmp;
+   for(interval=n/2; interval>0; interval=interval/2)
+   {
+      for(i=interval; i<n; i++)
+      {
+	 tmp=a[i];
+	 for(j=i; j>=interval && a[j-interval]>tmp; j=j-interval)
+	 {
+	    a[j]=a[j-interval];
+	 }
+	 a[j]=tmp;
+      }
+   }
 }

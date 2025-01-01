@@ -1,33 +1,42 @@
-//Series 6 9 14 21 30...upto n
+//Bubble Sort...
+#include<conio.h>
 #include<iostream.h>
 #include<stdio.h>
-#include<conio.h>
-void printseries(int n)
+#include<stdlib.h>
+#define size 10
+void bubsort(int a[]);
+void disp(int a[]);
+void main()
 {
-   int a=6;
-   int d1=3;
-   int d2=5;
-   int d=d1;
+   int i,data[size];
    clrscr();
-   for(int i=0;i<n;i++)
+   for(i=0;i<size;i++)
+     data[i] = rand() % 1000;
+   cout<<"\n Before Sorting...\n";
+   disp(data);
+   cout<<"\n After Sorting...\n";
+   bubsort(data);
+   disp(data);
+}
+void bubsort(int a[])
+{
+   int out,in,tmp;
+   for(out=size-1;out>=0;out--)
    {
-      cout<<a<<" ";
-      a+=d;
-      if(i%2==0)
+      for(in=0;in<out;in++)
       {
-	d=d2;
-      }
-      else
-      {
-      d=d1;
+	if(a[in] > a[in+1])
+	{
+	  tmp = a[in];
+	  a[in] = a[in+1];
+	  a[in+1] = tmp;
+	}
       }
    }
 }
-int main()
+void disp(int a[])
 {
-   int n;
-   cout<<"Enter the Number of Terms:";
-   cin>>n;
-   printseries(n);
-   return 0;
+   int i;
+   for(i=0;i<size;i++)
+   cout<<" %d"<<a[i];
 }
