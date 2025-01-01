@@ -1,0 +1,190 @@
+create table client_master24
+    (client_no varchar(6) primary key check(client_no like 'C%'),
+    name varchar(20) not null,
+    address1 varchar(30),
+    address2 varchar(30),
+    city varchar(15),
+    state varchar(15),
+    pincode number(6),
+    bal_due number(10,2));
+
+create table product_master24
+    (product_no varchar(6) primary key check(product_no like 'P%'),
+    discription varchar(50) not null,
+    profit_percent number(5,2) not null,
+    unit_measure varchar(10) not null,
+    qty_on_hand number(8) not null,
+    reorder_lvl number(8) not null,
+    sell_price number(8,2)not null check(sell_price not like 0),
+    cost_price number(8,2) not null check(cost_price not like 0));
+
+create table salesman_master24
+    (salesman_no varchar(6) primary key check(salesman_no like 'S%'),
+    salesman_name varchar(20) not null,
+    address1 varchar(30) not null,
+    address2 varchar(30),
+    city varchar(20),
+    pincode varchar(6),
+    state varchar(20),
+    sal_amt number(8,2) not null check(sal_amt not like 0),
+   tgt_to_get number(6,2) not null check(tgt_to_get not like 0),
+   ytd_sales number(6,2) not null,
+   remarks varchar(60));
+
+create table sales_order24
+    (s_order_no varchar(6) primary key check(s_order_no like'O%'),
+    s_order_date varchar(15),
+   client_no varchar(6) references client_master24(client_no),
+    dely_addr varchar(25),
+    salesman_no varchar(6) references salesman_master24(salesman_no),
+    dely_type char(1) default 'F' check(dely_type in('P','F')),
+    billed_yn char(1),
+    dely_date varchar(15) ,
+   order_status varchar(10) check(order_status in('In Process','Fulfilled','BackOrder','Canceled')),
+   constraint abcde check (s_order_date<dely_date));
+
+create table sales_order_details24
+    (s_order_no varchar(6),
+    product_no varchar(6),
+    qty_ordered number(8),
+    qty_disp number(8),
+    product_rate number(10,2),
+    primary key(s_order_no,product_no),
+    foreign key(s_order_no) references sales_order24(s_order_no),
+    foreign key(product_no) references product_master24(product_no));
+
+create table challan_header24
+    (challan_no varchar(6) primary key check(challan_no like'CH%'),
+    s_order_no varchar(6) references sales_order24(s_order_no),
+    challan_date varchar(15) not null,
+    billed_yn char(1) default 'N' check(billed_yn in('Y','N')));
+
+create table challan_details24
+(challan_no varchar(6) references challan_header24(challan_no),
+product_no varchar(6) references product_master24(product_no),
+qty_disp number(8) references sales_order_details24(qty_disp));
+
+insert into client_master24 (client_no,name,city,pincode,state,bal_due) values('C00001','Ivan Bayross','Bombay',400054,'Maharashtra',15000);
+
+insert into client_master24 (client_no,name,city,pincode,state,bal_due) values('C00002','Vandana Saitwal','Madras',780001,'Tamil Nadu',0);
+
+insert into client_master24 (client_no,name,city,pincode,state,bal_due) values('C00003','Pramada Jaguste','Bombay',400057,'Maharashtra',5000);
+
+insert into client_master24 (client_no,name,city,pincode,state,bal_due) values('C00004','Basu Navindgi','Bombay',400056,'Maharashtra',0);
+
+insert into client_master24 (client_no,name,city,pincode,bal_due) values('C00005','Ravi Sreedharan','Delhi',100001,2000);
+
+insert into client_master24 (client_no,name,city,pincode,state,bal_due) values('C00006','Rukmini','Bombay',400050,'Maharashtra',0);
+
+
+
+insert all
+    into product_master24 values('P00001','1.44 Floppies',5,'Piece',100,20,525,500)
+    into product_master24 values('P03453','Monitors',6,'Piece',10,3,12000,11280)
+    into product_master24 values('P06734','Mouse',5,'Piece',20,5,1050,1000)
+    into product_master24 values('P07865','1.22 Floppies',5,'Piece',100,20,525,500)
+    into product_master24 values('P07868','Keyboards',2,'Piece',10,3,3150,3050)
+    into product_master24 values('P07885','CD Drive',2.5,'Piece',10,3,5250,5100)
+    into product_master24 values('P07965','540 Hdd',4,'Piece',10,3,8400,8000)
+    into product_master24 values('P07975','1.44 Drive',5,'Piece',10,3,1050,1000)
+   into product_master24 values('P08865','1.22 Drive',5,'Piece',2,3,1050,1000)
+   select * from dual;
+
+insert all
+    into salesman_master24 values('S00001','Kiran','A/14','Worli','Bombay','400002','MAH',3000,100,50,'Good')
+    into salesman_master24 values('S00002','MAnish','65','Nariman','Bombay','400001','MAH',3000,200,100,'Good')
+    into salesman_master24 values('S00003','Ravi','P-7','Bandra','Bombay','400032','MAH',3000,200,100,'Good')
+    into salesman_master24 values('S00004','Ashish','A/5','Juhu','Bombay','400044','MAH',3000,200,150,'Good')
+select * from dual;
+
+insert into sales_order24 (s_order_no,s_order_date,client_no,dely_type,billed_yn,salesman_no,dely_date,order_status) values('O19001','12-jan-96','C00001','F','N','S00001','20-jan-96','In Process');
+insert into sales_order24 (s_order_no,s_order_date,client_no,dely_type,billed_yn,salesman_no,dely_date,order_status) values('O19002','25-jan-96','C00002','P','N','S00002','27-jan-96','Canceled');
+insert into sales_order24 (s_order_no,s_order_date,client_no,dely_type,billed_yn,salesman_no,dely_date,order_status) values('O46865','18-feb-96','C00003','F','Y','S00003','20-feb-96','Fulfilled');
+insert into sales_order24 (s_order_no,s_order_date,client_no,dely_type,billed_yn,salesman_no,dely_date,order_status) values('O19003','3-apr-96','C00001','F','Y','S00001','07-apr-96','Fulfilled');
+insert into sales_order24 (s_order_no,s_order_date,client_no,dely_type,billed_yn,salesman_no,dely_date,order_status) values('O46866','20-may-96','C00004','P','N','S00002','22-may-96','Canceled');
+insert into sales_order24 (s_order_no,s_order_date,client_no,dely_type,billed_yn,salesman_no,dely_date,order_status) values('O10008','24-may-96','C00005','F','N','S00004','26-may-96','In Process');
+
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O19001','P00001',4,4,525);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O19001','P07965',2,1,8400);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O19001','P07885',2,1,5250);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O19002','P00001',10,0,525);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O46865','P07868',3,3,3150);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O46865','P07885',3,1,5250);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O46865','P00001',10,10,525);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O46865','P03453',4,4,1050);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O19003','P03453',2,2,1050);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O19003','P06734',1,1,12000);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O46865','P07965',1,0,8400);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O46865','P07975',1,0,1050);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O10008','P00001',10,5,525);
+insert into sales_order_details24 (s_order_no,product_no,qty_ordered,qty_disp,product_rate) values('O10008','P07975',5,3,1050);
+  
+insert all
+into challan_header24 values('CH9001','O19001','12-dec-95','Y')
+into challan_header24 values('CH6865','O46865','12-nov-95','Y')
+into challan_header24 values('CH3965','O10008','12-oct-95','Y')
+select * from dual;
+
+1) select name from client_master24;
+2) select * from client_master24;
+3) select city,name from client_master24;
+4)
+5) select name from client_master24 where name like '_a%';
+6) select name,city from client_master24 where city like '_a%';
+7) select name from client_master24 where city='Bombay' or city='Delhi' or city='Madras';
+8) select name,city from client_master24 where city='Bombay';
+9) select name,bal_due from client_master24 where bal_due>10000;
+10)select * from sales_order24 where dely_date='20-jan-96' or dely_date='27-jan-96';
+11)select * from sales_order24 where client_no='C00001' or client_no='C00002';
+12)select * from product_master24 where discription='1.44 Drive' or discription='1.22 Drive';
+13)select discription,sell_price from product_master24 where sell_price>2000 and sell_price<=5000;
+14) select discription,sell_price,cost_price *15 from product_master24 where sell_price >1500 or sell_price=1050 or sell_price=525;
+15)alter table product_master24 rename column cost_price to new_price;
+16)select discription,new_price from product_master24 where new_price<1500;
+17)select discription from product_master24 order by discription;
+18)select sqrt(sell_price) from product_master24;
+19)***select new_price/(100) from product_master24 where discription='540 Hdd';
+20)select name,city,state from client_master24 where not state='Maharashtra';
+21)select product_no,discription,sell_price from product_master24 where discription like'M%';
+22)select s_order_no,s_date_date,order_status from sales_order24 where order_ststus='Canceled' or s
+23)select count(s_order_no) from sales_order24;
+24)select avg(product_rate) from sales_order_details24;
+25)select min(sell_price) from product_master24;
+26)select min(sell_price) as min_price,max(sell_price) as max_price from product_master24;
+27)select count(sell_price) from product_master24 where sell_price>=1500;
+28)select discription,qty_on_hand from product_master24 where qty_on_hand<reorder_lvl;
+29)
+30)select discription,sum(qty_on_hand) from product_master24 group by discription;
+31)select qty_ordered from sales_order_details24;
+32)select s_order_no,avg(qty_ordered*product_rate) from sales_order_details24 group by s_order_no having avg(qty_ordered*product_rate)<15000;
+33)select salesman_master24.salesman_no,salesman_master24.sal_amt,sales_order24.salesman_no,sales_order24.s_order_date from salesman_master24 full outer join sales_order24 on salesman_master24.salesman_no=sales_order24.salesman_no where s_order_date='12-jan-96' or s_order_date='25-jan-96';
+34)select product_master24.product_no,product_master24.discription,sales_order_details24.product_no,sales_order_details24.qty_ordered from product_master24 full outer join sales_order_details24 on product_master24.product_no=sales_order_details24.product_no;
+35)select product_master24.product_no,product_master24.discription,sales_order_details24.product_no,sales_order_details24.qty_ordered,sales_order_details24.s_order_no,sales_order24.s_order_no,sales_order24.s_order_date from product_master24 full outer join sales_order_details24  on product_master24.product_no=sales_order_details24.product_no join sales_order24 on sales_order_details24.s_order_no=sales_order24.s_order_no;
+***36)select client_master24.client_no,client_master24.name,product_master24.product_no,product_master24.discription,sales_order24.client_no,sales_order_details24.product_no from client_master24 full outer join sales_order24 on client_master24.client_no=sales_order24.client_no join product_master24.product_no=sales_order_details24.product_no;
+37)select sales_order24.s_order_no,sales_order24.dely_date,sales_order_details24.s_order_no,sales_order_details24.product_no from sales_order24 full outer join sales_order_details24 on sales_order24.s_order_no=sales_order_details24.s_order_no where dely_date='20-jan-96';
+38)select product_master24.product_no, product_master24.discription, sales_order_details24.product_no from product_master24 full outer join  sales_order_details24 on product_master24.product_no=sales_order_details24.product_no;
+39)
+40)
+41)
+42)
+43)
+44)select client_master24.client_no,client_master24.name,client_master24.city,client_master24.pincode,sales_order24.client_no,sales_order24.s_order_no,salesman_master24.address1,salesman_master24.address2,salesman_master24.city from salesman_master24 full outer join client_master24 on salesman_master24.pincode=client_master24.pincode join sales_order24 on  client_master24.client_no=sales_order24.client_no where s_order_no='O19001';
+45)
+46)
+47)
+48)
+49)
+50)
+51)
+52)
+53)update sales_order24 set s_order_date='24-jul-96' where client_no='C00001';
+54)update product_master24 set sell_price=1150 where discription='1.44 Drive';
+55)delete from sales_order_details24 where s_order_no='O19001';
+***56)delete from sales_order24 where dely_date<'10-jul-96';
+57) update client_master24 set city='Bombay' where client_no='C00005';
+***58)update sales_order24 set dely_date='16-Oct-96' where s_order_no='O10008';
+59)update client_master24 set bal_due=1000 where client_no='C00001';
+60)update product_master24 set new_price=950 where discription='1.22 Floppies';
+
+
+
